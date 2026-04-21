@@ -1,0 +1,78 @@
+Smart Campus Sensor & Room Management API
+
+Overview
+This project is a RESTful API developed using JAX-RS (Jersey) for managing a university Smart Campus system. It allows users to manage rooms, sensors, and sensor readings across campus buildings.
+The API follows REST principles, uses JSON for communication, and includes proper error handling with appropriate HTTP status codes. All data is stored in-memory using HashMap and ArrayList.
+
+How to Run the Project :
+Open the project in NetBeans
+Run the project using Tomcat
+The application will deploy automatically
+
+Base URL :
+http://localhost:8080/mavenproject1/api/v1
+
+API Endpoints :
+GET /api/v1
+GET /api/v1/rooms
+POST /api/v1/rooms
+GET /api/v1/rooms/{roomId}
+DELETE /api/v1/rooms/{roomId}
+
+GET /api/v1/sensors
+POST /api/v1/sensors
+GET /api/v1/sensors/{sensorId}
+GET /api/v1/sensors?type=CO2
+
+GET /api/v1/sensors/{sensorId}/readings
+POST /api/v1/sensors/{sensorId}/readings
+
+Sample cURL Commands
+
+curl -X GET http://localhost:8080/mavenproject1/api/v1
+curl -X GET http://localhost:8080/mavenproject1/api/v1/rooms
+curl -X POST http://localhost:8080/mavenproject1/api/v1/rooms -H "Content-Type: application/json" -d "{"id":"LIB-301","name":"Library","capacity":50}"
+curl -X GET http://localhost:8080/mavenproject1/api/v1/sensors
+curl -X GET http://localhost:8080/mavenproject1/api/v1/sensors?type=CO2
+
+Theory Answers
+
+Part 1: Service Architecture & Setup
+
+Q1: JAX-RS Lifecycle
+In JAX-RS, resource classes follow a request-based lifecycle. A new instance of the resource class is created for each incoming request. In this project, multiple instances are created, and the data is stored in shared in-memory structures like HashMap and ArrayList. These data structures remain available across requests because they are shared. Since these structures are shared, concurrency issues can arise in real-world systems. However, for this coursework, this approach is enough to show how in-memory data is managed.
+
+Q2: HATEOAS
+HATEOAS stands for Hypermedia As The Engine Of Application State. It lets APIs include links in responses, enabling clients to navigate the API dynamically. This lowers the need for outside documentation since clients can find available resources directly through the API. In this project, the discovery endpoint offers links to key resources such as rooms and sensors.
+
+Part 2: Room Management
+
+Q3: Returning IDs vs Full Objects
+Returning only IDs cuts down on the data sent over the network. However, this means the client needs to make extra requests to get complete details. On the other hand, returning full objects increases the data size. Yet, it makes things easier for the client since all information is available in one request. In this project, we return full objects because it simplifies how clients use the data.
+
+Q4: DELETE Idempotency
+DELETE is idempotent because making the same request multiple times leads to the same result. If a room is deleted successfully, sending the same DELETE request again will not affect the system. It might return a 404 error, but the final state stays the same.
+
+Part 3: Sensors & Filtering
+
+Q5: @Consumes Annotation
+The @Consumes(MediaType.APPLICATION_JSON) annotation makes sure that the API only accepts JSON data. If a client sends data in another format, like text/plain or XML, JAX-RS will reject the request and return a 415 Unsupported Media Type error.
+
+Q6: QueryParam vs PathParam
+Query parameters are better for filtering because they allow flexible searching without changing the URL structure. For example, /sensors?type=CO2 clearly shows that filtering is happening. Using path parameters for filtering can make the API less clear and harder to extend.
+
+Part 4: Deep Nesting
+
+Q7: Sub-resource Locator
+The sub-resource locator pattern allows for handling nested resources with separate classes. In this project, sensor readings are handled in a separate class, which keeps the code clean and easier to maintain. It also prevents large and complex resource classes.
+
+Part 5: Error Handling & Logging
+
+Q8: HTTP 422 vs 404
+HTTP 422 is used when the request is valid but contains incorrect data, such as a sensor referencing a room that does not exist. HTTP 404 is used when the requested endpoint or resource cannot be found. Using 422 gives clearer feedback to the client about validation errors.
+
+Q9: Stack Trace Security Risk
+Showing internal stack traces can reveal sensitive information like class names, file paths, and system structure. Hackers can use this information to find weaknesses. Therefore, the API returns generic error messages instead of revealing internal details.
+
+Q10: Logging Filters
+Logging filters handle request and response logging in one place. This avoids adding logging code in every method and makes the application easier to maintain. It also ensures that all requests and responses are logged consistently.
