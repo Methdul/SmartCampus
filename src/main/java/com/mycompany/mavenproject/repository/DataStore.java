@@ -22,13 +22,9 @@ public class DataStore {
     public static final Map<String, List<SensorReading>> readings = new HashMap<>();
 
     static {
-        // Initializing the system with sample data for testing
-        Room northLab = new Room("LIB-301", "Library Quiet Study", 50);
-        rooms.put(northLab.getId(), northLab);
-
-        Sensor tempSensor = new Sensor("TEMP-001", "Temperature", "ACTIVE", 22.4, "LIB-301");
+        // Initializing the system with a maintenance sensor for demonstration
+        Sensor tempSensor = new Sensor("TEMP-001", "Temperature", "MAINTENANCE", 22.4, "LIB-301");
         sensors.put(tempSensor.getId(), tempSensor);
-        northLab.getSensorIds().add(tempSensor.getId());
 
         // Initialize empty readings for the default sensor
         readings.put(tempSensor.getId(), new ArrayList<>());
