@@ -25,3 +25,4 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+SmartCampus_API.postman_collection.json
